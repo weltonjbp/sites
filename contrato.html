@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contrato de Tratamento de Dados Pessoais</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+
+        h1, h3 {
+            color: #333;
+        }
+
+        input[type="text"] {
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            padding: 5px;
+            width: 35%;
+            margin: 5px 0 15px 0;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .imag {
+            width: 100px;
+            height: 60px;
+            border-bottom: solid 1px #000;
+        }
+
+        .assinatura {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .assinatura p {
+            margin: 0;
+        }
+
+        @media print {
+            input[type="text"], input[type="date"], input[type="time"], select {
+                border-bottom: solid 1px #000;
+                border-top: none;
+                border-left: none;
+                border-right: none;
+                background: none;
+                -webkit-appearance: none;
+                -moz-appearance: none;
+                appearance: none;
+            }
+            button {
+                display: none;
+            }
+            .container {
+                border: none;
+                padding: 0;
+                margin: 0;
+            }
+            body {
+                margin: 0;
+                padding: 5px;
+            }
+        }
+
+        /* Estilos para dispositivos móveis */
+        @media (max-width: 768px) {
+            body {
+                margin: 10px;
+            }
+
+            .container {
+                padding: 10px;
+                max-width: 100%;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            h3 {
+                font-size: 18px;
+            }
+
+            input[type="text"] {
+                width: 100%;
+                font-size: 14px;
+            }
+
+            button {
+                width: 100%;
+                padding: 15px;
+                font-size: 16px;
+            }
+
+            .imag {
+                width: 80px;
+                height: 50px;
+                margin: 0;
+                padding: 0;
+            }
+
+            .assinatura {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>CONTRATO DE TRATAMENTO DE DADOS PESSOAIS</h1>
+
+        <p>Pelo presente instrumento particular, as partes:</p>
+
+        <p>
+            <strong>1. <input id="input1" type="text" placeholder="Nome da Parte Contratante:"></strong>, 
+            com sede em <input id="input2" type="text" placeholder="Endereço:">, inscrita no CNPJ sob o nº 
+            <input type="text" id="input3" placeholder="Número do CNPJ ou CPF:" maxlength="18">, doravante denominada "Contratante";
+        </p>
+
+        <p>
+            <strong>2. <input id="input4" type="text" value="Welton Julio Bernardes Pereira" readonly></strong>, 
+            com sede em <input id="input5" type="text"  value="Agenor Ximenes do Prado N° 309" readonly>, inscrita no CNPJ sob o nº 
+            <input type="text" id="input6" value ="13.969.313/0001-02" readonly>, doravante denominada "Contratada";
+        </p>
+
+        <p>Têm entre si, justas e contratadas, as seguintes cláusulas:</p>
+
+        <h3>CLÁUSULA 1 - OBJETO</h3>
+        <p>O presente contrato tem por objeto a regulamentação da coleta, uso, armazenamento e tratamento de dados pessoais pela Contratada em nome da Contratante, em conformidade com a Lei Geral de Proteção de Dados (Lei nº 13.709/2018).</p>
+
+        <h3>CLÁUSULA 2 - OBRIGAÇÕES DA CONTRATADA</h3>
+        <p>A Contratada se obriga a:</p>
+        <ol>
+            <li>Tratar os dados pessoais somente para as finalidades especificadas pela Contratante.</li>
+            <li>Implementar medidas de segurança adequadas para proteger os dados pessoais contra acesso não autorizado, perda ou destruição.</li>
+            <li>Notificar a Contratante imediatamente em caso de incidentes de segurança que possam comprometer os dados pessoais.</li>
+            <li>Garantir que seus funcionários e colaboradores estejam cientes das obrigações relativas à proteção de dados.</li>
+        </ol>
+
+        <h3>CLÁUSULA 3 - OBRIGAÇÕES DA CONTRATANTE</h3>
+        <p>A Contratante se obriga a:</p>
+        <ol>
+            <li>Fornecer à Contratada todos os dados pessoais necessários para a execução do objeto deste contrato.</li>
+            <li>Garantir que possui o consentimento dos titulares dos dados para o tratamento dos dados pessoais, quando aplicável.</li>
+        </ol>
+
+        <h3>CLÁUSULA 4 - DIREITOS DOS TITULARES</h3>
+        <p>A Contratada se compromete a respeitar os direitos dos titulares dos dados pessoais, conforme previsto na LGPD, incluindo:</p>
+        <ol>
+            <li>Acesso aos dados pessoais;</li>
+            <li>Correção de dados incompletos ou desatualizados;</li>
+            <li>Eliminação dos dados quando não forem mais necessários.</li>
+        </ol>
+
+        <h3>CLÁUSULA 5 - VIGÊNCIA</h3>
+        <p>Este contrato terá vigência pelo prazo de <input id="input7" type="text"  placeholder="especificar prazo:">, podendo ser prorrogado mediante acordo entre as partes.</p>
+
+        <h3>CLÁUSULA 6 - RESCISÃO</h3>
+        <p>O presente contrato poderá ser rescindido por qualquer uma das partes, mediante notificação prévia de <input type="date"> dias.</p>
+
+        <h3>CLÁUSULA 7 - DISPOSIÇÕES GERAIS</h3>
+        <ol>
+            <li>Este contrato é regido pela legislação brasileira.</li>
+            <li>Eventuais controvérsias oriundas deste contrato serão resolvidas perante o foro da comarca de <input id="input8" type="text" value="Guarenésia MG" readonly>       </li>
+        </ol>
+
+        <p>E, por estarem assim justas e contratadas, firmam o presente contrato em duas vias de igual teor e forma.</p>
+
+        <p><input id="input11" type="text" placeholder="Local ">, <input type="date" ></p>
+        <div class="assinatura">
+            <p>______________________________<br>
+            <input id="input9" type="text" placeholder="Nome da Parte Contratante"><br>
+            <input id="input10" type="text" placeholder="Cargo"></p>
+
+            <p><img class="imag" src="https://diskwai.com.br/Imagens/Assinatura.png" alt="assinatura"><br>
+            <input id="input12" type="text" value="Welton Julio Bernardes Pereira" readonly><br>
+            <input id="input13" type="text" value="CEO. Empresa: gmapsistemas.com.br" readonly></p>
+        </div>
+        <button onclick="window.print()">Imprimir Contrato</button>
+    </div>
+
+    <script>
+        // Função para aplicar máscara de CPF ou CNPJ
+        function aplicarMascaraCPFCNPJ(input) {
+            let value = input.value.replace(/\D/g, ''); // Remove tudo que não for dígito
+            if (value.length <= 11) {
+                // Formata CPF (000.000.000-00)
+                value = value.replace(/(\d{3})(\d)/, '$1.$2');
+                value = value.replace(/(\d{ 3})(\d)/, '$1.$2');
+                value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+            } else {
+                // Formata CNPJ (00.000.000/0000-00)
+                value = value.replace(/^(\d{2})(\d)/, '$1.$2');
+                value = value.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3');
+                value = value.replace(/\.(\d{3})(\d)/, '.$1/$2');
+                value = value.replace(/(\d{4})(\d)/, '$1-$2');
+            }
+            input.value = value; // Atualiza o valor do input com a máscara
+        }
+
+        // Aplica a máscara ao campo de CNPJ/CPF
+        const inputCNPJCPF = document.getElementById('input3');
+        inputCNPJCPF.addEventListener('input', () => {
+            aplicarMascaraCPFCNPJ(inputCNPJCPF);
+        });
+
+        // Função para ajustar o tamanho do input
+        function ajustarTamanhoInput(input) {
+            const temp = document.createElement('span');
+            temp.style.visibility = 'hidden';
+            temp.style.whiteSpace = 'nowrap';
+            temp.style.fontSize = window.getComputedStyle(input).fontSize;
+            temp.style.fontFamily = window.getComputedStyle(input).fontFamily;
+            temp.textContent = input.value || input.placeholder;
+
+            document.body.appendChild(temp);
+            input.style.width = `${temp.offsetWidth + 10}px`;
+            document.body.removeChild(temp);
+        }
+
+        // Ajusta o tamanho dos inputs
+        const inputs = document.querySelectorAll('input[type="text"]');
+        inputs.forEach(input => {
+            ajustarTamanhoInput(input);
+            input.addEventListener('input', () => {
+                ajustarTamanhoInput(input);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,199 @@
+body{
+    background-color: #f0f0f0;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+nav{
+    background-color: #7094f5;
+    color: #f0f0f0;
+    padding: 2px 0;
+    text-align: center;
+    scrollbar-width: thin;
+    cursor: pointer;
+}
+
+ul{
+    
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    padding: 0;
+    list-style: none;
+    scrollbar-width: thin;
+    
+}
+
+li{
+    padding: 5px;
+    cursor: pointer;
+    scrollbar-width: thin;
+    
+}
+
+li a{
+    color: #343636;
+    text-decoration: none;
+    scrollbar-width: thin;
+    font-weight: bold;
+}
+
+li a:hover{
+    color: #f0f0f0;
+    text-decoration: underline;
+    scrollbar-width: thin;
+}
+
+
+.header{
+    color: #343636;
+    padding: 10px 0;
+    text-align: center;
+}
+.header img{
+    width: 100px;
+    border-radius: 50%;
+    padding: 10px;
+    border-style: groove;
+}
+.header h1{
+    margin: 0;
+}
+.descricao{
+    margin: 0;
+    font-size: 12px;
+    padding: 2px 50px 10px 50px; ;
+    color: #343636;
+}
+
+.categoria{
+    display: flex;
+    justify-content: center;
+    color: #f0f0f0;
+    padding: 10px 0;
+    text-align: center;
+    scrollbar-width: thin;
+    cursor: pointer;
+}
+categoria_list{
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+    background-color: #343636;
+    color: #f0f0f0;
+    text-align: center;
+    
+}
+.categoria_list img{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    gap: 10px;
+    justify-items: center;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    padding: 1px;
+    border-style: groove;
+    margin: 10px;
+    
+}
+
+.ispan{
+    padding: 10px;
+    font-size: 12px;
+    color: #343636;
+    text-align: center;
+}
+
+.loj{
+    text-align: center;
+}
+
+.container{
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 10px 0px 0px 0px;
+    scrollbar-width: thin;
+    color: #343636;
+    margin-bottom: 150px;
+}
+.card{
+    background-color: #f0f0f0;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 0px 0px 0px 0px;
+    width: 200px;
+    text-align: center;
+    scrollbar-width: thin;
+
+}
+.card img{
+    width: 200px;
+    height: 200px;
+    margin: 0 auto;
+
+}
+
+.btn{
+    background-color: #7094f5;
+    color: #343636;
+    border: none;
+    width: 100%;
+    border-radius: 5px;
+    padding: 15px 10px;
+    margin: 0;
+    cursor: pointer;
+    scrollbar-width: thin;
+
+}
+.footer {
+    background-color: white;
+    padding: 5px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    border-top: 1px solid #ddd;
+    z-index: 1000;
+    margin-top: 30px;
+    margin-bottom: 0;
+    margin-left: 0;
+    margin-right: 0;
+    position: fixed; /* Adicione essa propriedade */
+    bottom: 0; /* Adicione essa propriedade */
+    left: 0; /* Adicione essa propriedade */
+    width: 100%; /* Adicione essa propriedade */
+}
+.footer .icon {
+    text-align: center;
+    font-size: 12px;
+}
+.footer .icon i {
+    font-size: 20px;
+}
+.footer .icon .badge {
+    background-color: yellow;
+    color: black;
+    border-radius: 50%;
+    padding: 2px 2px;
+    font-size: 10px;
+    position: absolute;
+    margin-left: -10px;
+    margin-top: -10px;
+}
+
+
+
+
+/* footer{
+    background-color: #7094f5;
+    color: #343636;
+    padding: 10px 0;
+    text-align: center;
+    scrollbar-width: thin;
+    cursor: pointer;
+    margin-top: 30px;
+} */
+

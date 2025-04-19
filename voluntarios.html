@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scanner de Folhas de Presença</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 10px;
+      max-width: 100%;
+      margin: 0;
+      background-color: #f4f4f4;
+    }
+    .container {
+      background-color: #fff;
+      padding: 10px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 10px;
+      font-size: 1.2em;
+    }
+    .alert {
+      background: #ffeeba;
+      color: #85640c;
+      padding: 15px;
+      border: 1px solid #ffc107;
+      border-radius: 6px;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+    .form-group {
+      margin-bottom: 10px;
+      display: block;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+    }
+    input[type="text"],
+    input[type="month"],
+    input[type="file"] {
+      width: calc(100% - 20px);
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    button {
+      width: 100%;
+      margin: 10px 0;
+      background-color: #007bff;
+      color: white;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    #preview {
+      margin-top: 10px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 10px;
+    }
+    #preview img {
+      max-width: 100%;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+      height: auto;
+    }
+    input[type="file"] {
+      padding: 5px;
+    }
+    .camera-controls {
+      margin-top: 10px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .camera-controls video {
+      max-width: 100%;
+      height: auto;
+      border: 1px solid #ccc;
+    }
+    @media (min-width: 768px) {
+      .container {
+        padding: 30px;
+      }
+      h1 {
+        margin-bottom: 20px;
+      }
+      .alert {
+        margin-bottom: 20px;
+      }
+      .form-group {
+        margin-bottom: 20px;
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 10px;
+        align-items: center;
+      }
+      .form-group label {
+        text-align: right;
+        padding-right: 10px;
+      }
+      #preview {
+        margin-top: 30px;
+        gap: 15px;
+      }
+    }
+    /* Estilos básicos para o modal */
+    .modal {
+      display: none; /* Hidden by default */
+      position: fixed;
+      z-index: 1;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.4);
+    }
+    .modal-content {
+      background-color: #fefefe;
+      margin: 15% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+      border-radius: 8px;
+      position: relative;
+    }
+    .close-button {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+    }
+    .close-button:hover,
+    .close-button:focus {
+      color: black;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .modal-controls {
+      margin-top: 10px;
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+    #modalPreviewList {
+      display: flex;
+      gap: 5px;
+      margin-top: 10px;
+      overflow-x: auto;
+    }
+    #modalPreviewList img {
+      max-height: 50px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Envio de Folhas de Presença</h1>
+    </header>
+    <section class="alert-section">
+      <div class="alert">
+        ⚠️ Ignorar vias amarelas e carbono. Apenas folhas brancas.
+      </div>
+    </section>
+    <section class="form-section">
+      <form id="uploadForm">
+        <div class="form-group">
+          <label for="house">Casa de Oração:</label>
+          <input type="text" id="house" required>
+        </div>
+        <div class="form-group">
+          <label for="month">Ano Mês de Competência:</label>
+          <input type="month" id="month" required>
+        </div>
+        <div class="form-group">
+          <label for="days">Período de Dias:</label>
+          <input type="text" id="days" placeholder="Ex: 10 a 17" required>
+        </div>
+        <div id="categories">
+          <div class="category-group" data-category-index="0">
+            <div class="form-group">
+              <label>Livro:</label>
+              <input type="text" class="category-name" required>
+            </div>
+            <div class="form-group">
+              <label>Imagens da Livro:</label>
+              <input type="file" class="category-images" multiple accept="image/*">
+            </div>
+            <div class="camera-controls">
+              <video class="camera-preview" autoplay playsinline style="display: none; max-width: 200px; height: auto; border: 1px solid #ccc;"></video>
+              <button type="button" class="capture-button">Capturar Câmera</button>
+              <canvas class="captured-image" style="display: none;"></canvas>
+              <button type="button" class="confirm-capture-button" style="display: none;">Confirmar Captura</button>
+              <ul class="captured-image-list"></ul>
+            </div>
+            <input type="hidden" class="captured-images-data" name="captured_images_0" value="">
+          </div>
+        </div>
+        <button type="button" id="addCategory">Adicionar Livro</button>
+        <button type="button" id="gerarPdfButton">Gerar PDF</button>
+      </form>
+    </section>
+    <section class="preview-section">
+      <h2>Pré-visualização das Imagens</h2>
+      <div id="preview"></div>
+    </section>
+  </div>
+
+  <!-- Modal de Câmera -->
+  <div id="cameraModal" class="modal">
+    <div class="modal-content">
+      <span class="close-button">&times;</span>
+      <h2>Captura de Imagem</h2>
+      <video id="modalCameraPreview" autoplay playsinline style="max-width: 100%; height: auto; border: 1px solid #ccc;"></video>
+      <canvas id="modalCapturedImage" style="display: none;"></canvas>
+      <div class="modal-controls">
+        <button type="button" id="modalCaptureButton">Capturar</button>
+        <button type="button" id="modalCancelButton">Cancelar</button>
+        <button type="button" id="modalConfirmButton" style="display: none;">Confirmar</button>
+      </div>
+      <div id="modalPreviewList"></div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/3.0.1/jspdf.umd.min.js"></script>
+  <script>
+    let categoryCounter = 1; // Contador para as categorias adicionais
+    let stream = null;
+    const cameraModal = document.getElementById('cameraModal');
+    const modalCameraPreview = document.getElementById('modalCameraPreview');
+    const modalCaptureButton = document.getElementById('modalCaptureButton');
+    const modalCancelButton = document.getElementById('modalCancelButton');
+    const modalConfirmButton = document.getElementById('modalConfirmButton');
+    const modalCapturedImage = document.getElementById('modalCapturedImage');
+    const modalPreviewList = document.getElementById('modalPreviewList');
+
+    // Função para abrir o modal e iniciar a câmera para a categoria atual
+    function openCameraModal(categoryGroup) {
+      cameraModal.dataset.currentCategoryId = categoryGroup.dataset.categoryIndex;
+      modalPreviewList.innerHTML = ''; // Limpa as prévias anteriores
+      cameraModal.style.display = "block";
+
+      // Tenta acessar a câmera traseira
+      navigator.mediaDevices.getUserMedia({ video: { facingMode: { exact: 'environment' } } })
+        .then(s => {
+          stream = s;
+          modalCameraPreview.srcObject = stream;
+        })
+        .catch(error => {
+          console.error('Erro ao acessar a câmera traseira:', error);
+          // Fallback para qualquer câmera
+          navigator.mediaDevices.getUserMedia({ video: true })
+            .then(s => {
+              stream = s;
+              modalCameraPreview.srcObject = stream;
+              console.warn('Câmera traseira não disponível, usando câmera frontal.');
+            })
+            .catch(fallbackError => {
+              console.error('Erro ao acessar qualquer câmera:', fallbackError);
+              alert('Erro ao acessar a câmera.');
+              closeModal();
+            });
+        });
+    }
+
+    // Função para fechar o modal e parar a transmissão da câmera
+    function closeModal() {
+      cameraModal.style.display = "none";
+      cameraModal.dataset.currentCategoryId = '';
+      if (stream) {
+        stream.getVideoTracks().forEach(track => track.stop());
+        stream = null;
+      }
+      modalConfirmButton.style.display = 'none';
+    }
+
+    // Eventos globais do modal (únicos, centralizados)
+    // Botão para capturar imagem (tira foto do vídeo)
+    modalCaptureButton.addEventListener('click', () => {
+      if (!modalCameraPreview.videoWidth || !modalCameraPreview.videoHeight) {
+        console.error('Dimensões do vídeo não disponíveis.');
+        return;
+      }
+      modalCapturedImage.width = modalCameraPreview.videoWidth;
+      modalCapturedImage.height = modalCameraPreview.videoHeight;
+      const context = modalCapturedImage.getContext('2d');
+      context.drawImage(modalCameraPreview, 0, 0, modalCapturedImage.width, modalCapturedImage.height);
+
+      const imageDataURL = modalCapturedImage.toDataURL('image/jpeg');
+      const img = document.createElement('img');
+      img.src = imageDataURL;
+      img.style.maxHeight = '50px';
+      modalPreviewList.appendChild(img);
+      modalConfirmButton.style.display = 'inline-block';
+    });
+
+    // Botão para cancelar a operação
+    modalCancelButton.addEventListener('click', () => {
+      closeModal();
+    });
+
+    // Botão para confirmar a captura e atribuir as imagens à categoria correta
+    modalConfirmButton.addEventListener('click', () => {
+      const currentCategoryId = cameraModal.dataset.currentCategoryId;
+      if (currentCategoryId !== '') {
+        const currentCategoryGroup = document.querySelector(`.category-group[data-category-index="${currentCategoryId}"]`);
+        if (currentCategoryGroup) {
+          const capturedImagesDataInput = currentCategoryGroup.querySelector('.captured-images-data');
+          const capturedImageList = currentCategoryGroup.querySelector('.captured-image-list');
+          const modalPreviewImages = modalPreviewList.querySelectorAll('img');
+          const newCaptures = Array.from(modalPreviewImages).map(img => img.src);
+          capturedImagesDataInput.value = JSON.stringify(newCaptures);
+          capturedImageList.innerHTML = '';
+          newCaptures.forEach(dataUrl => {
+            const li = document.createElement('li');
+            const img = document.createElement('img');
+            img.src = dataUrl;
+            img.style.maxWidth = '50px';
+            img.style.maxHeight = '50px';
+            li.appendChild(img);
+            capturedImageList.appendChild(li);
+          });
+        }
+      }
+      modalConfirmButton.style.display = 'none';
+      closeModal();
+    });
+
+    // Função para atribuir o evento de clique do botão "Capturar Câmera" à categoria
+    function attachCaptureButtonEvent(categoryGroup) {
+      const captureButton = categoryGroup.querySelector('.capture-button');
+      captureButton.addEventListener('click', () => {
+        openCameraModal(categoryGroup);
+      });
+    }
+
+    // Função para gerar o PDF (mantida do código original)
+    function generatePDF() {
+      console.log('Botão Gerar PDF clicado!');
+      try {
+        const house = document.getElementById('house').value;
+        const month = document.getElementById('month').value;
+        const days = document.getElementById('days').value;
+        const categoryGroups = document.querySelectorAll('.category-group');
+        const allImages = [];
+
+        categoryGroups.forEach(group => {
+          const categoryName = group.querySelector('.category-name').value;
+          const fileInputs = group.querySelector('.category-images');
+          const capturedImagesDataInput = group.querySelector('.captured-images-data');
+          const capturedImagesData = JSON.parse(capturedImagesDataInput.value || '[]');
+          const fileImages = fileInputs.files;
+          const categoryImages = [];
+
+          // Adiciona imagens carregadas via input
+          Array.from(fileImages).forEach(file => {
+            categoryImages.push(file);
+          });
+
+          // Adiciona imagens capturadas via modal
+          capturedImagesData.forEach(dataUrl => {
+            categoryImages.push(dataUrl);
+          });
+
+          allImages.push({ name: categoryName, images: categoryImages });
+        });
+
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF();
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const pageHeight = pdf.internal.pageSize.getHeight();
+        let yPos = 20;
+        const headerText = `Casa de Oração: ${house}\nMês: ${month}\nPeríodo: ${days}`;
+        const lines = headerText.split('\n');
+        let currentY = 20;
+        pdf.setFontSize(20);
+        pdf.setFont('helvetica', 'bold');
+        lines.forEach(line => {
+          const lineWidth = pdf.getStringUnitWidth(line) * pdf.getFontSize() / pdf.internal.scaleFactor;
+          const lineCenterX = (pageWidth - lineWidth) / 2;
+          pdf.text(line, lineCenterX, currentY);
+          currentY += 10;
+        });
+        pdf.setFontSize(12);
+        pdf.setFont('helvetica', 'normal');
+        const headerBottomY = currentY + 5;
+        const margin = 10;
+        pdf.setLineWidth(0.8);
+        pdf.setDrawColor(150);
+        pdf.line(margin, headerBottomY, pageWidth - margin, headerBottomY);
+        pdf.setDrawColor(0);
+        pdf.setLineWidth(0.2);
+        yPos = headerBottomY + 10;
+
+        const processImage = (imageData) => {
+            return new Promise((resolveImage) => {
+              let imgData;
+              const targetHeight = 180; // Altura desejada para todas as imagens (ajuste este valor)
+              
+              const loadImageDimensions = (src) => {
+                return new Promise((resolve) => {
+                  const img = new Image();
+                  img.onload = () => {
+                    resolve({ 
+                      width: img.width, 
+                      height: img.height,
+                      aspectRatio: img.width / img.height
+                    });
+                  };
+                  img.onerror = () => resolve({ aspectRatio: 1 });
+                  img.src = src;
+                });
+              };
+          
+              const addImageToPdf = async (dataUrl) => {
+                const dimensions = await loadImageDimensions(dataUrl);
+                const calculatedWidth = targetHeight * dimensions.aspectRatio;
+                
+                // Verifica se precisa de nova página
+                if (yPos + targetHeight > pageHeight - 20) {
+                  pdf.addPage();
+                  yPos = 20;
+                }
+          
+                // Centraliza horizontalmente
+                const xPos = (pageWidth - calculatedWidth) / 2;
+                
+                pdf.addImage(
+                  dataUrl,
+                  'JPEG',
+                  xPos,
+                  yPos,
+                  calculatedWidth,
+                  targetHeight,
+                  null,
+                  'SLOW',
+                  0.9
+                );
+                
+                yPos += targetHeight + 10; // Espaço entre imagens
+                resolveImage();
+              };
+          
+              if (imageData instanceof File) {
+                const reader = new FileReader();
+                reader.onload = async (event) => {
+                  await addImageToPdf(event.target.result);
+                };
+                reader.readAsDataURL(imageData);
+              } else if (typeof imageData === 'string') {
+                addImageToPdf(imageData);
+              } else {
+                resolveImage();
+              }
+            });
+          };
+
+        const processCategory = (category) => {
+          return new Promise((resolve) => {
+            pdf.setFontSize(14);
+            const categoryName = category.name;
+            const categoryNameWidth = pdf.getStringUnitWidth(categoryName) * pdf.getFontSize() / pdf.internal.scaleFactor;
+            const categoryNameCenterX = (pageWidth - categoryNameWidth) / 2;
+            pdf.text(categoryName, categoryNameCenterX, yPos);
+            yPos += 15;
+
+            Promise.all(category.images.map(processImage)).then(() => {
+              resolve();
+            });
+          });
+        };
+
+        const processAllCategories = () => {
+          return allImages.reduce((promiseChain, category, index) => {
+            return promiseChain.then(() => {
+              return processCategory(category).then(() => {
+                if (index < allImages.length - 1) {
+                  pdf.addPage();
+                  yPos = 20;
+                }
+              });
+            });
+          }, Promise.resolve());
+        };
+
+        processAllCategories().then(() => {
+          const filename = `Folhas_Presença_${month}.pdf`;
+          pdf.save(filename);
+        });
+      } catch (error) {
+        console.error('Ocorreu um erro ao gerar o PDF:', error);
+      }
+    }
+
+    // Eventos e configuração inicial
+    document.addEventListener('DOMContentLoaded', () => {
+      // Configure o botão de fechar do modal
+      const closeButton = cameraModal.querySelector('.close-button');
+      closeButton.addEventListener('click', closeModal);
+
+      // Atacha o evento para a primeira categoria
+      const initialCategoryGroup = document.querySelector('.category-group');
+      if (initialCategoryGroup) {
+        attachCaptureButtonEvent(initialCategoryGroup);
+      }
+
+      // Evento para adicionar uma nova categoria
+      document.getElementById('addCategory').addEventListener('click', function () {
+        const newCategoryIndex = categoryCounter++;
+        const newCategory = document.createElement('div');
+        newCategory.classList.add('category-group');
+        newCategory.dataset.categoryIndex = newCategoryIndex;
+        newCategory.innerHTML = `
+          <div class="form-group">
+            <label>Livro:</label>
+            <input type="text" class="category-name" required>
+          </div>
+          <div class="form-group">
+            <label>Imagens da Livro:</label>
+            <input type="file" class="category-images" multiple accept="image/*">
+          </div>
+          <div class="camera-controls">
+            <video class="camera-preview" autoplay playsinline style="display: none; max-width: 200px; height: auto; border: 1px solid #ccc;"></video>
+            <button type="button" class="capture-button">Capturar Câmera</button>
+            <canvas class="captured-image" style="display: none;"></canvas>
+            <button type="button" class="confirm-capture-button" style="display: none;">Confirmar Captura</button>
+            <ul class="captured-image-list"></ul>
+          </div>
+          <input type="hidden" class="captured-images-data" name="captured_images_${newCategoryIndex}" value="">
+        `;
+        document.getElementById('categories').appendChild(newCategory);
+        attachCaptureButtonEvent(newCategory);
+      });
+
+      // Evento para visualizar imagens selecionadas via input (preview global)
+      document.getElementById('categories').addEventListener('change', function (e) {
+        if (e.target.classList.contains('category-images')) {
+          const preview = document.getElementById('preview');
+          preview.innerHTML = '';
+          const files = e.target.files;
+          for (let i = 0; i < files.length; i++) {
+            const reader = new FileReader();
+            reader.onload = function (event) {
+              const img = document.createElement('img');
+              img.src = event.target.result;
+              preview.appendChild(img);
+            };
+            reader.readAsDataURL(files[i]);
+          }
+        }
+      });
+
+      // Evento para gerar o PDF
+      const generatePdfButton = document.getElementById('gerarPdfButton');
+      if (generatePdfButton) {
+        generatePdfButton.addEventListener('click', generatePDF);
+      } else {
+        console.error('Botão "Gerar PDF" não encontrado.');
+      }
+    });
+  </script>
+</body>
+</html>

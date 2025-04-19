@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendário de Reuniões</title>
+ <style>
+        body {
+            font-family: Arial, Helvetica, Verdana, Geneva, Tahoma,sans-serif;
+            font-size: 11px;
+        }
+        .container {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            border: 2px solid #000;
+            border-collapse: collapse;
+        }
+        .header {
+            background-color: #00BFFF;
+            text-align: center;
+            font-weight: bold;
+            padding: 10px;
+        }
+        .editable-header {
+            display: inline-block;
+            border: none;
+            background: none;
+            text-align: center;
+            font-weight: bold;
+            text-transform: uppercase;
+            width: 100%;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #000;
+            padding: 5px;
+            text-align: center;
+        }
+        th {
+            background-color: #00BFFF;
+        }
+        td[contenteditable] {
+            background-color: #f9f9f9;
+        }
+        .button-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .input-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .btn-excluir {
+            background-color: #ff4d4d;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .col-acao {
+            display: flex;
+            gap: 2px; /* Espaço entre os botões */
+           
+        }
+        .x {
+          background-color: #960707;
+          color: white;
+            }
+        .v{
+         background-color: #FFD700;
+         color: black;
+            }
+        .col-acao button {
+            flex: 1; /* Faz os botões ocuparem o espaço disponível */
+            white-space: nowrap; /* Evita que o texto dos botões quebre em várias linhas */
+        }
+        .end-of-month {
+            background-color: #e0e0e0;
+            font-weight: bold;
+        }
+
+        @media print {
+
+            body{
+                -webkit-print-color-adjust: exact; /* Corrigir cores ao imprimir no Chrome */
+                print-color-adjust: exact; /* Corrigir cores ao imprimir em outros navegadores */
+            }
+            input[type="date"], input[type="time"], select {
+                border: none;
+                background: none;
+                -webkit-appearance: none;
+                -moz-appearance: none;
+                appearance: none;
+            }
+            .button-container, .input-container, .btn-excluir {
+                display: none;
+            }
+            .editable-header {
+                border: none;
+                background: none;
+                text-align: center;
+                font-weight: bold;
+                text-transform: uppercase;
+                width: 100%;
+            }
+			.btn-excluir {
+             display: none;
+             }
+			 .btn-limpar {
+             display: none;
+             }
+			.prints {
+             display: none;
+			 padding: 0;
+
+            }
+	        th.prints, td.col-acao {
+              display: none;
+             }
+             .limpa {
+                background-color: yellow !important;
+            }
+			 
+	}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+           <!-- SANTA CRUZ DA PRATA<br>-->
+            <input type="text" class="editable-header" id="editableHeader" value="CALENDÁRIO DE REUNIÕES FAMILIARES E DE EVANGELIZAÇÃO DE JANEIRO A FEVEREIRO 2025">
+        </div>
+        <div class="input-container">
+            <label for="year">Ano:</label>
+            <input type="number" id="year" value="2025" min="2023" max="2100">
+            <label for="month">Mês:</label>
+            <input type="number" id="month" value="1" min="1" max="12"> <!-- Mês atual -->
+        </div>
+        <table id="calendarTable">
+            <thead>
+                <tr>
+                    <th>DATA</th>
+                    <th>DIA</th>
+                    <th>HORA</th>
+                    <th>LOCALIDADE</th>
+                    <th>BAIRRO</th>
+                    <th>ATENDERÁ IRM.</th>
+                    <th class="prints">AÇÃO</th> <!-- Coluna "AÇÃO" -->
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Existing rows here -->
+            </tbody>
+        </table>
+        <div class="button-container">
+            <button onclick="generateRandomMeetings()">Gerar Reuniões Aleatórias</button>
+            <button onclick="addManualMeeting()">Adicionar Reunião Manualmente</button>
+            <button onclick="window.print()">Imprimir</button>
+        </div>
+    </div>
+
+    <script>
+        const localidades = [
+            "Irmão Leonardo Irmã Cida", "Irmão Wilson Irmã Edinha", "Irmã Maria Irmão Dico",
+            "Irmão João Irmã Feliciana", "Reunião de evangelisação",
+            "Irmã Nilsa - Irmão Uederson", "Irmão Chiquinho Irmã Regina", "Irmão João Carlos - Irmã Sonia",
+            "Irmã Rosa", "Irmã Odete", "Irmão Edinho", "Irmã Roseli Moisés", "Irmão Paulo"
+        ];
+
+        const bairros = [
+            "FAZENDA SEIS PAUS", "SÍTIO BOM SUCESSO", "1º DE MAIO", "ALTO DA BOA VISTA" , "Irmã Landa do Jair",
+            "PASSARÃO DA ILHA III", "SÍTIO DAS POÇAS", "CENTRO", "Sítio Bugi", "Sítio João José"
+        ];
+
+        let atendentes = ["ANTONIO", "ZAQUEU", "WELTON", "CLAUDIO"];
+        let atendentesUsados = [];
+
+        function getRandomElement(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        function getRandomDate(start, end) {
+            const date = new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+            return date.toISOString().split('T')[0];
+        }
+
+        function getUniqueAtendente() {
+            if (atendentes.length === 0) {
+                atendentes = atendentesUsados;
+                atendentesUsados = [];
+            }
+            const atendente = getRandomElement(atendentes);
+            atendentes = atendentes.filter(a => a !== atendente);
+            atendentesUsados.push(atendente);
+            return atendente;
+        }
+
+        function generateRandomMeetings() {
+            const year = parseInt(document.getElementById("year").value);
+            const month = parseInt(document.getElementById("month").value) - 1; // JavaScript months are 0-based
+            const startDate = new Date(year, month, 1);
+            const endDate = new Date(year, month + 2, 0); // Generate for the next two months
+
+            const tbody = document.querySelector("#calendarTable tbody");
+            tbody.innerHTML = ""; // Clear existing rows
+
+            let meetings = [];
+
+            for (let i = 0; i < 30; i++) { // Generate 30 meetings for two months
+                const date = getRandomDate(startDate, endDate);
+                const day = new Date(date).toLocaleDateString('pt-BR', { weekday: 'long' });
+                const time = `${Math.floor(Math.random() * 12 + 8).toString().padStart(2, '0')}:${Math.floor(Math.random() * 60).toString().padStart(2, '0')}`;
+                const localidade = getRandomElement(localidades);
+                const bairro = getRandomElement(bairros);
+                const atendente = getUniqueAtendente();
+
+                meetings.push({
+                    date,
+                    day,
+                    time,
+                    localidade,
+                    bairro,
+                    atendente
+                });
+            }
+
+            // Sort meetings by date
+            meetings.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+            // Add sorted meetings to the table
+            meetings.forEach(meeting => {
+                const row = `
+                    <tr>
+                        <td><input type="date" value="${meeting.date}" onchange="updateDay(this)" onkeydown="handleEnter(event)"></td>
+                        <td contenteditable="true">${meeting.day}</td>
+                        <td><input type="time" value="${meeting.time}" onkeydown="handleEnter(event)"></td>
+                        <td>
+                            <select onkeydown="handleEnter(event)">
+                                ${localidades.map(localidade => `<option value="${localidade}" ${localidade === meeting.localidade ? 'selected' : ''}>${localidade}</option>`).join('')}
+                            </select>
+                        </td>
+                        <td>
+                            <select onkeydown="handleEnter(event)">
+                                ${bairros.map(bairro => `<option value="${bairro}" ${bairro === meeting.bairro ? 'selected' : ''}>${bairro}</option>`).join('')}
+                            </select>
+                        </td>
+                        <td>
+                            <select onkeydown="handleEnter(event)">
+                                ${[...atendentes, ...atendentesUsados].map(atendente => `<option value="${atendente}" ${atendente === meeting.atendente ? 'selected' : ''}>${atendente}</option>`).join('')}
+                            </select>
+                        </td>
+                        <td class="col-acao">
+                            <button class="x" onclick="excluirLinha(this)">X</button>
+                            <button class="v" onclick="limpar(this)">v</button>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        function addManualMeeting() {
+            const tbody = document.querySelector("#calendarTable tbody");
+            const row = `
+                <tr>
+                    <td><input type="date" onchange="updateDay(this)" onkeydown="handleEnter(event)"></td>
+                    <td contenteditable="true"></td>
+                    <td><input type="time" onkeydown="handleEnter(event)"></td>
+                    <td>
+                        <select onkeydown="handleEnter(event)">
+                            ${localidades.map(localidade => `<option value="${localidade}">${localidade}</option>`).join('')}
+                        </select>
+                    </td>
+                    <td>
+                        <select onkeydown="handleEnter(event)">
+                            ${bairros.map(bairro => `<option value="${bairro}">${bairro}</option>`).join('')}
+                        </select>
+                    </td>
+                    <td>
+                        <select onkeydown="handleEnter(event)">
+                            ${atendentes.map(atendente => `<option value="${atendente}">${atendente}</option>`).join('')}
+                        </select>
+                    </td>
+                    <td class="col-acao">
+                        <button class="x" onclick="excluirLinha(this)">X</button>
+                        <button class="v" onclick="limpar(this)">v</button>
+                    </td>
+                </tr>
+            `;
+            tbody.insertAdjacentHTML('beforeend', row);
+        }
+
+        function excluirLinha(botao) {
+            var linha = botao.closest('tr');
+            linha.remove();
+        }
+
+        function updateDay(dateInput) {
+            const dateValue = dateInput.value;
+            if (!dateValue) {
+                console.error("O valor do input de data está vazio.");
+                return;
+            }
+            const date = new Date(dateValue + "T00:00:00");
+            if (isNaN(date.getTime())) {
+                console.error("Data inválida fornecida.");
+                return;
+            }
+            const day = date.toLocaleDateString('pt-BR', { weekday: 'long' });
+            const siblingElement = dateInput.parentElement.nextElementSibling;
+            if (siblingElement) {
+                siblingElement.innerText = day;
+            } else {
+                console.error("Elemento irmão não encontrado.");
+            }
+        }
+
+        function handleEnter(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                const inputs = Array.from(document.querySelectorAll("input, select"));
+                const index = inputs.indexOf(event.target);
+                if (index === inputs.length - 1) {
+                    // Se o foco está na última coluna, cria uma nova linha
+                    addManualMeeting();
+                    // Foca na primeira coluna da nova linha
+                    const newRow = document.querySelector("#calendarTable tbody tr:last-child td:first-child input");
+                    if (newRow) {
+                        newRow.focus();
+                    }
+                } else if (index > -1 && index < inputs.length - 1) {
+                    inputs[index + 1].focus();
+                }
+            }
+        }
+
+        document.getElementById("month").value = new Date().getMonth() + 1; // Mês atual
+
+        function limpar(botao) {
+            const linha = botao.closest('tr');
+            linha.textContent = '';
+            linha.style.height = '2px';
+            linha.style.width = '2px';
+            linha.style.border = 'none';
+            linha.style.padding = '0px';
+            linha.style.margin = '0px';
+            linha.style.top = '-2px';
+            linha.style.left = '-2px';
+            linha.style.background = 'none';
+            linha.style.fontWeight = 'bold';
+            linha.style.textAlign = 'center';
+            linha.style.fontSize = '12px';
+            linha.style.lineHeight = '12px';
+            linha.style.fontFamily = 'Arial, sans-serif';
+            linha.style.cursor = 'pointer';
+            linha.style.borderRadius = '5px';
+            linha.style.backgroundColor = 'yellow';
+
+            const endOfMonthRow = '<tr class="end-of-month"><td colspan="7">Final do Mês</td></tr>';
+            linha.insertAdjacentHTML('afterend', endOfMonthRow);
+        }
+    </script>
+</body>
+</html>

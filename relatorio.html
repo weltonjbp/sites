@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <meta http-equiv="CONTENT-TYPE" content="text/html; charset=UTF-8">
+ 
+    <title>Relatório Mensal das Receitas Brutas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+
+            margin: 5px;
+            padding: 5px;
+            display: flex;
+            justify-content: center;
+
+            background-color: #f4f4f4;
+        }
+        .container {
+            width: 90%;
+            max-width: 900px;
+       
+            background-color: #fff;
+            border: 1px solid #000;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #e0e0e0;
+        }
+        .header {
+            text-align: center;
+            font-weight: bold;
+        }
+        .footer {
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        .footer p {
+            margin: 5px 0;
+        }
+        .signature {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0;
+            flex-wrap: wrap;
+            border:1px solid #000;
+            padding-top: 3px;
+            padding-bottom: 5px;
+            padding-left: 20px;
+        }
+        .signature div {
+            width: 100%;
+            margin-bottom: 5px;
+            margin-top: 0;
+        }
+        .signature div p{
+            margin-top:0;
+            
+        }
+        .cidadi{
+            
+            border-top: none;
+            border-left: none;
+            border-right: none;
+            border-bottom: 1px solid #000;
+            margin-top: 10px;
+            margin-left: 10px;
+            padding: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        .nessano{
+            border: none;
+            margin-top: 10px;
+            margin-left: 10px;
+            padding: 5px;
+            font-size: 16px;
+          
+        }
+        .editable input {
+            border: none;
+            border-bottom: 1px solid #000;
+            width: 100%;
+            padding: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        .pj{
+            
+            border-top: none;
+            border-left: none;
+            border-right: none;
+            border-bottom: 1px solid #000;
+            margin-top: 10px;
+            margin-left: 10px;
+            padding: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        .negrito {
+            font-weight: bold;
+        }
+
+        @media (min-width: 600px) {
+
+
+            .signature div {
+                width: 45%;
+                margin-bottom: 0;
+            }
+
+        
+            .editable {
+                display: flex;
+                align-items: center;
+            }
+            .editable input {
+                border: none;
+                border-bottom: 1px solid #000;
+                width: 100%;
+                padding: 5px;
+                font-size: 16px;
+                box-sizing: border-box;
+            }
+            .editable span {
+                margin-right: 5px;
+            }
+            .print-button {
+                margin-top: 20px;
+                text-align: center;
+            }
+        }
+      @media print {
+    body {
+        height: auto;
+        padding: 0;
+        margin: 0;
+        display: block;
+        justify-content: normal;
+        align-items: normal;
+        -webkit-print-color-adjust: exact; /* Corrigir cores ao imprimir no Chrome */
+        print-color-adjust: exact; /* Corrigir cores ao imprimir em outros navegadores */
+        
+    }
+    input{
+        border: none;
+         ;
+    }
+    .pj {
+        border-bottom: none;
+    }
+    .cidadi{
+        border: none;
+    }
+    .editable input {
+        border: none;   
+    }
+     .header {
+        font-size: 20px;
+        background-color: #e0e0e0;
+        }
+    .container {
+        width: 100%; /* Use 100% da largura da página ao imprimir */
+        border: none; /* Remover borda ao imprimir */
+        padding: 0; /* Remover padding ao imprimir */
+        margin-top: 0;
+    }
+    table {
+        border-collapse: collapse; /* Garantir que as bordas da tabela sejam colapsadas */
+    }
+    th, td {
+        border: 1px solid #000; /* Manter bordas visíveis */
+    }
+    .editable input {
+       /* display: none; /* Esconder campos de entrada */
+        border-bottom: 0,4px solid #000;
+        border-top: 0;
+        border-right:0;
+        border-left:0;
+    }
+    .print-button {
+        display: none; /* Esconder botão de impressão */
+    }
+    .footer {
+        page-break-after: auto; /* Ou remova completamente */
+    }
+}
+
+    </style>
+    <script>
+        function printReport() {
+            window.print();
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <table>
+            <tr>
+                <th colspan="3" class="header">RELATÓRIO MENSAL DAS RECEITAS BRUTAS</th>
+            </tr>
+            <tr>
+                <td colspan="3"><span> CNPJ:</span><input class="pj" type="text" placeholder="seu cnpj neste campo" id="input3"></td>
+                
+            </tr>
+            <tr>
+                <td colspan="3"><span> Empreendedor individual:</span><input class="pj" type="text" placeholder="Nome da Empresa" id="input1"></td>
+            </tr>
+            <tr>
+                <td colspan="3" ><span> Período de apuração:</span><input class="nessano" type="month" id="mesAnoInput"></td>
+            </tr>
+            <tr>
+                <th colspan="3" class="header">RECEITA BRUTA MENSAL – REVENDA DE MERCADORIAS (COMÉRCIO)</th>
+            </tr>
+            <tr>
+                <td>I – Revenda de mercadorias com dispensa de emissão de documento fiscal</td>
+                <td class="editable"><span>R$</span><input type="text" placeholder="0,00" id="input2"></td>
+            </tr>
+            <tr>
+                <td>II – Revenda de mercadorias com documento fiscal emitido</td>
+                <td class="editable"><span>R$</span><input type="text" placeholder="0,00" id="input4"></td>
+            </tr>
+            <tr>
+                <td>III – Total das receitas com revenda de mercadorias (I + II)</td>
+                <td class="editable"><span>R$</span><input type="text" placeholder="0,00" id="input5"></td>
+            </tr>
+            <tr>
+                <th colspan="3" class="header">RECEITA BRUTA MENSAL – VENDA DE PRODUTOS INDUSTRIALIZADOS (INDÚSTRIA)</th>
+            </tr>
+            <tr>
+                <td>IV – Venda de produtos industrializados com dispensa de emissão de documento fiscal</td>
+                <td class="editable"><span>R$</span><input type="text" placeholder="0,00" id="input6"></td>
+            </tr>
+            <tr>
+                <td>V – Venda de produtos industrializados com documento fiscal emitido</td>
+                <td class="editable"><span>R$</span><input type="text" placeholder="0,00" id="input7"></td>
+            </tr>
+            <tr>
+                <td>VI – Total das receitas com venda de produtos industrializados (IV + V)</td>
+                <td class="editable"><span>R$</span><input type="text" placeholder="0,00" id="input8"></td>
+            </tr>
+            <tr>
+                <th colspan="4" class="header">RECEITA BRUTA MENSAL – PRESTAÇÃO DE SERVIÇOS</th>
+            </tr>
+            <tr>
+                <td>VII – Receita com prestação de serviços com dispensa de emissão de documento fiscal</td>
+                <td class="editable"><span>R$</span><input type="text" placeholder="0,00" id="input9"></td>
+            </tr>
+            <tr>
+                <td>VIII – Receita com prestação de serviços com documento fiscal emitido</td>
+                <td class="editable"><span>R$</span><input type="text" placeholder="0,00" id="input10"></td>
+            </tr>
+            <tr>
+                <td>IX – Total das receitas com prestação de serviços (VII + VIII)</td>
+                <td class="editable"><span>R$</span><input type="text" placeholder="0,00" id="input11"></td>
+            </tr>
+            <tr>
+                <td class="negrito">X - Total geral das receitas brutas no mês (III + VI + IX)</td>
+                <td class="editable negrito"><span>R$</span><input class="negrito" type="text" placeholder="0,00" id="input12"></td>
+            </tr>
+        </table>
+        <div class="signature">
+            <div>
+                <p>DATA E LOCAL:</p>
+                <span id="dataAtual"> Data Atual: </span>
+
+                <input class="cidadi" type="text" placeholder="Cidade">
+
+            </div>
+            <div>
+                <p>ASSINATURA DO EMPRESÁRIO:</p>
+            </div>
+        </div>
+        <div class="footer">
+            <p>ENCONTRAM-SE ANEXADOS A ESTE RELATÓRIO:</p>
+            <p>- Os documentos fiscais comprobatórios das entradas de mercadorias e serviços tomados referentes ao período;</p>
+            <p>- As notas fiscais relativas às operações ou prestações realizadas eventualmente emitidas.</p>
+        </div>
+        <div class="print-button">
+            <button onclick="printReport()">Imprimir</button>
+        </div>
+    </div>
+
+
+<script>
+
+        // Função para aplicar máscara de CPF ou CNPJ
+        function aplicarMascaraCPFCNPJ(input) {
+            let value = input.value.replace(/\D/g, ''); // Remove tudo que não for dígito
+            if (value.length <= 11) {
+                // Formata CPF (000.000.000-00)
+                value = value.replace(/(\d{3})(\d)/, '$1.$2');
+                value = value.replace(/(\d{ 3})(\d)/, '$1.$2');
+                value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+            } else {
+                // Formata CNPJ (00.000.000/0000-00)
+                value = value.replace(/^(\d{2})(\d)/, '$1.$2');
+                value = value.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3');
+                value = value.replace(/\.(\d{3})(\d)/, '.$1/$2');
+                value = value.replace(/(\d{4})(\d)/, '$1-$2');
+            }
+            input.value = value; // Atualiza o valor do input com a máscara
+        }
+
+        // Aplica a máscara ao campo de CNPJ/CPF
+        const inputCNPJCPF = document.getElementById('input3');
+        inputCNPJCPF.addEventListener('input', () => {
+            aplicarMascaraCPFCNPJ(inputCNPJCPF);
+        });
+
+        /*        // Função para ajustar o tamanho do input
+                function ajustarTamanhoInput(input) {
+                    const temp = document.createElement('span');
+                    temp.style.visibility = 'hidden';
+                    temp.style.whiteSpace = 'nowrap';
+                    temp.style.fontSize = window.getComputedStyle(input).fontSize;
+                    temp.style.fontFamily = window.getComputedStyle(input).fontFamily;
+                    temp.textContent = input.value || input.placeholder;
+        
+                    document.body.appendChild(temp);
+                    input.style.width = `${temp.offsetWidth + 10}px`;
+                    document.body.removeChild(temp);
+                }
+        
+                // Ajusta o tamanho dos inputs
+                const inputs = document.querySelectorAll('input[type="text"]');
+                inputs.forEach(input => {
+                    ajustarTamanhoInput(input);
+                    input.addEventListener('input', () => {
+                        ajustarTamanhoInput(input);
+                    });
+                });*/
+
+                        // Função para formatar a data
+        function formatarData(data) {
+            const dia = String(data.getDate()).padStart(2, '0');
+            const mes = String(data.getMonth() + 1).padStart(2, '0'); // Mês começa do 0
+            const ano = data.getFullYear();
+            return `${dia}/${mes}/${ano}`;
+        }
+
+        // Pegar a data atual
+        const dataAtual = new Date();
+
+        // Exibir a data formatada no elemento com id "dataAtual"
+        document.getElementById('dataAtual').textContent = formatarData(dataAtual);
+
+
+
+      // Selecionar o campo de entrada
+      const mesAnoInput = document.getElementById('mesAnoInput');
+
+      // Definir o valor inicial como o mês e ano atuais
+      const mesAno = new Date();
+      const mes = String(mesAno.getMonth() + 1).padStart(2, '0'); // Mês começa do 0
+      const ano = mesAno.getFullYear();
+      mesAnoInput.value = `${ano}-${mes}`; // Formato esperado: YYYY-MM
+
+      // Capturar o valor selecionado
+      mesAnoInput.addEventListener('change', function() {
+          const valorSelecionado = mesAnoInput.value; // Formato: YYYY-MM
+          console.log("Mês e Ano selecionados:", valorSelecionado);
+      });
+
+
+// Função para converter string em número, tratando vírgulas como separadores decimais
+function parseCurrency(value) {
+    return parseFloat(value.replace(/\./g, '').replace(',', '.')) || 0;
+}
+
+// Função para formatar número como moeda (R$)
+function formatCurrency(value) {
+    return value.toLocaleString('pt-BR', { style: 'decimal', minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+
+// Função para atualizar os totais
+function updateTotals() {
+    // Obter os valores dos campos
+    const i = parseCurrency(document.getElementById('input2').value);
+    const ii = parseCurrency(document.getElementById('input4').value);
+    const iv = parseCurrency(document.getElementById('input6').value);
+    const v = parseCurrency(document.getElementById('input7').value);
+    const vii = parseCurrency(document.getElementById('input9').value);
+    const viii = parseCurrency(document.getElementById('input10').value);
+
+    // Calcular os totais
+    const iii = i + ii;
+    const vi = iv + v;
+    const ix = vii + viii;
+    const x = iii + vi + ix;
+
+    // Atualizar os campos de totais
+    document.getElementById('input5').value = formatCurrency(iii);
+    document.getElementById('input8').value = formatCurrency(vi);
+    document.getElementById('input11').value = formatCurrency(ix);
+    document.getElementById('input12').value = formatCurrency(x);
+}
+
+// Adicionar listeners para os campos de entrada
+document.getElementById('input2').addEventListener('input', updateTotals);
+document.getElementById('input4').addEventListener('input', updateTotals);
+document.getElementById('input6').addEventListener('input', updateTotals);
+document.getElementById('input7').addEventListener('input', updateTotals);
+document.getElementById('input9').addEventListener('input', updateTotals);
+document.getElementById('input10').addEventListener('input', updateTotals);
+
+// Inicializar os totais ao carregar a página
+updateTotals();
+
+</script>
+
+</body>
+</html>

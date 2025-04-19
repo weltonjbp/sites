@@ -1,0 +1,341 @@
+
+                 <!DOCTYPE html>
+                <html lang="pt-br">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+					
+                    <title>Quiz Musical - CCB</title>
+
+                    <style>
+                        body {
+                            font-family: 'Arial', sans-serif;
+                            max-width: 800px;
+                            margin: 0 auto;
+                            padding: 20px;
+                            background-color: #f0f7ff;
+                        }
+
+                        #start-section, .quiz-container, .ranking {
+                            background-color: white;
+                            padding: 25px;
+                            border-radius: 10px;
+                            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+                            margin-bottom: 20px;
+                        }
+
+                        .quiz-container {
+                            display: none;
+                        }
+
+                        input[type="text"], input[type="tel"] {
+                            padding: 10px;
+                            margin: 10px 0;
+                            width: 100%;
+                            max-width: 300px;
+                            border: 1px solid #2c5aa0;
+                            border-radius: 5px;
+                        }
+
+                        button {
+                            background-color: #2c5aa0;
+                            color: white;
+                            padding: 12px 24px;
+                            border: none;
+                            border-radius: 5px;
+                            cursor: pointer;
+                            font-size: 16px;
+                            margin-top: 10px;
+                        }
+
+                        button:hover {
+                            background-color: #1d3d6d;
+                        }
+
+                        .question {
+                            margin-bottom: 25px;
+                            padding: 15px;
+                            border-left: 4px solid #2c5aa0;
+                        }
+
+                        .options label {
+                            display: block;
+                            margin: 10px 0;
+                            padding: 10px;
+                            background-color: #e6f0ff;
+                            border-radius: 5px;
+                            cursor: pointer;
+                        }
+
+                        .result {
+                            display: none;
+                            margin-top: 30px;
+                            padding: 20px;
+                            background-color: #e8f5e9;
+                            border-radius: 5px;
+                            color: #2c5aa0;
+                        }
+
+                        .ranking ul {
+                            list-style: none;
+                            padding: 0;
+                        }
+
+                        .ranking li {
+                            padding: 8px;
+                            margin: 5px 0;
+                            background-color: #e6f0ff;
+                            border-radius: 5px;
+                        }
+                        .incorrect {
+                            border-left: 4px solid #ff0000;
+                            background-color: #ffe6e6;
+                            animation: pulse 0.5s ease-in-out;
+                        }
+                        @keyframes pulse {
+                            0% { transform: scale(1); }
+                            50% { transform: scale(1.02); }
+                            100% { transform: scale(1); }
+                        }
+                    </style>
+					
+                </head>
+                <body>
+                    <!-- Tela Inicial -->
+                    <div id="start-section">
+                        <h1 id="meuTitulo">🎵 Avaliação MSA CCB- Fase 5</h1>
+                        
+                        <p>Digite seus dados para começar:</p>
+                        <input type="text" id="user-name" placeholder="Seu nome" required>
+                        <input type="tel" id="whatsapp" placeholder="Seu WhatsApp (Ex:0 0000-0000)" required>
+                        <input type="tel" id="professor-whatsapp" placeholder="WhatsApp do Professor (Ex:0 0000-0000)" required>
+                        <button onclick="startQuiz()">Iniciar Quiz</button>
+                        <p id="error-msg" style="color: red; display: none;">Preencha todos os campos corretamente!</p>
+                        
+                        <!-- Ranking -->
+                        <div class="ranking">
+                            <h3>🏆 Top 10 Pontuações</h3>
+                            <ul id="ranking-list"></ul>
+                        </div>
+                    </div>
+
+                    <!-- Quiz -->
+                    <div class="quiz-container" id="quiz-container">
+                        <h1>Quiz de Teoria Musical</h1>
+                        <div id="quiz-content"></div> <!-- Perguntas dinâmicas aqui -->
+                        <button onclick="checkAnswers()" style="display: none;" id="submit-btn">Enviar Respostas</button>
+                        <div class="result" id="result"></div>
+                    </div>
+
+                    <script>
+                        // JSON do quiz (gerado pelo professor)
+                        const quizData =  [{"pergunta":"O que é música?","opcoes":["São propriedades do som","É a arte de expressar sentimentos por meio de sons coordenados","É tudo o que ouvimos","São vibrações sonoras irregulares"],"correta":"É a arte de expressar sentimentos por meio de sons coordenados"},{"pergunta":"Complete: A é a produção ordenada de sons sucessivos. Exemplo: .","opcoes":["Ritmo; piano;","Harmonia; trompete;","Melodia; trompete;","Harmonia, flauta"],"correta":"Melodia; trompete;"},{"pergunta":"Qual das alternativas abaixo é o conceito de som?","opcoes":["É tudo o que ouvimos","O silêncio também é considerado com um tipo de som","Ruídos","Nenhuma das alternativas"],"correta":"É tudo o que ouvimos"},{"pergunta":"Qual alternativa abaixo não tem um ritmo constante?","opcoes":["Pisca-alerta do carro","Palma","Metrônomo","Relógio"],"correta":"Palma"},{"pergunta":"Assinale a alternativa correta.","opcoes":["“A buzina do trem produz um som longo”. Logo, nos referimos à Intensidade","Altura é a propriedade do som ser forte ou fraco.","Timbre é a propriedade que permite reconhecer se o som é grave, médio ou agudo","A Duração é a sustentação do som, podendo ser curto ou longo"],"correta":"A Duração é a sustentação do som, podendo ser curto ou longo"},{"pergunta":"Melodia, harmonia e ritmo fazem parte de qual conjunto?","opcoes":["Elementos da música","Propriedades do som","Tipos de som","Propriedades da música"],"correta":"Elementos da música"},{"pergunta":"O que é timbre?","opcoes":["É o volume do som","É o que distingue um som do outro","É a propriedade das frequências das ondas sonoras","Todas alternativas estão corretas"],"correta":"É o que distingue um som do outro"},{"pergunta":"Qual das alternativas abaixo faz parte da propriedade do som “altura”?","opcoes":["Graves; médios; agudos","Altos; médios, baixos","Pianíssimo; piano; extra forte","Graves; fortes; agudos"],"correta":"Graves; médios; agudos"},{"pergunta":"O conceito “São utilizadas para notas musicais escritas mais agudas ou mais graves do que o pentagrama comporta ” refere-se:","opcoes":["Ao Pentagrama","As Linhas Complementares","As Linhas Suplementares","As Linhas Incrementais"],"correta":"As Linhas Suplementares"},{"pergunta":"A clave de Fá abrange as vozes tenor e baixo. Portanto, é correto afirmar que está sendo usado o elemento da música","opcoes":["Harmonia","Melodia","Ritmo","Altura"],"correta":"Harmonia"},{"pergunta":"O violino faz parte da família das","opcoes":["Teclados","Metais","Cordas","Madeiras"],"correta":"Cordas"},{"pergunta":"De acordo com a teoria musical do MSA nós temos:","opcoes":["7 Notas Musicais","6 Notas Musicais","5 Notas Musicais","8 Notas Musicais"],"correta":"7 Notas Musicais"},{"pergunta":"Como podemos definir o pentagrama?","opcoes":["É tudo o que precisamos para fazer música","É o conjunto de 5 linhas e 4 espaços","É o sinal que representa os sons graficamente","É tudo o que ouvimos"],"correta":"É o conjunto de 5 linhas e 4 espaços"},{"pergunta":"O que é clave?","opcoes":["É um símbolo gráfico que determina a duração do som","É um sinal para representar a pauta musical","É um sinal que determina o nome da nota escrita em sua linha de referência.","É um símbolo para dar o colorido musical"],"correta":"É um sinal que determina o nome da nota escrita em sua linha de referência."},{"pergunta":"Quais são as claves utilizadas em nossos Hinários e em quais linhas elas se iniciam?","opcoes":["Clave de Sol (2ª linha); Clave de Fá (4ª linha) e Clave de Dó (3ª linha)","Clave de Sol (2ª linha); Clave de Fá (3ª linha) e Clave de Dó (4ª linha)","Clave de Sol (2ª linha) e Clave de Fá (3ª linha)","Clave de Sol (4ª linha); Clave de Fá (4ª linha) e Clave de Dó (2ª linha)"],"correta":"Clave de Sol (2ª linha); Clave de Fá (4ª linha) e Clave de Dó (3ª linha)"}];
+                        let userData = {}; // Declaração global corrigida
+                        let detailedResults = [];
+						const titulo = document.getElementById('meuTitulo');
+                        const textoTitulo = titulo.textContent;
+                        // Carregar ranking
+                        loadRanking();
+
+                        // Iniciar quiz
+                        function startQuiz() {
+                            const name = document.getElementById('user-name').value;
+                            const whatsapp = document.getElementById('whatsapp').value.replace(/D/g, '');
+                            const professorWhatsApp = document.getElementById('professor-whatsapp').value.replace(/D/g, '');
+
+                            if (name && whatsapp.length === 11 && professorWhatsApp.length === 11 && quizData.length > 0) {
+                                userData = { 
+                                    name, 
+                                    whatsapp: `55${whatsapp}`, 
+                                    professorWhatsApp: `55${professorWhatsApp}` 
+                                };
+                                
+                                document.getElementById('start-section').style.display = 'none';
+                                document.getElementById('quiz-container').style.display = 'block';
+                                renderQuiz();
+                            } else {
+                                document.getElementById('error-msg').style.display = 'block';
+                            }
+                        }
+
+                        // Renderizar perguntas dinamicamente
+                      function renderQuiz() {
+                            const container = document.getElementById('quiz-content');
+                            container.innerHTML = '';
+
+                            quizData.forEach((q, index) => {
+                                const questionDiv = document.createElement('div');
+                                questionDiv.className = 'question';
+                                questionDiv.setAttribute('data-question-index', index);
+                                questionDiv.innerHTML = `
+                                    <h2>${index+1}. ${q.pergunta}</h2>
+                                    <div class="options">
+                                        ${q.opcoes.map(opt => `
+                                            <label><input type="radio" name="q${index}" value="${opt}"> ${opt}</label>
+                                        `).join('')}
+                                    </div>
+                                `;
+                                container.appendChild(questionDiv);
+                            });
+                            document.getElementById('submit-btn').style.display = 'block';
+                        }
+
+                        // Verificar respostas
+                     function renderQuiz() {
+                            const container = document.getElementById('quiz-content');
+                            container.innerHTML = '';
+
+                            quizData.forEach((q, index) => {
+                                const questionDiv = document.createElement('div');
+                                questionDiv.className = 'question';
+                                questionDiv.setAttribute('data-question-index', index);
+                                questionDiv.innerHTML = `
+                                    <h2>${index+1}. ${q.pergunta}</h2>
+                                    <div class="options">
+                                        ${q.opcoes.map(opt => `
+                                            <label><input type="radio" name="q${index}" value="${opt}"> ${opt}</label>
+                                        `).join('')}
+                                    </div>
+                                `;
+                                container.appendChild(questionDiv);
+                            });
+                            document.getElementById('submit-btn').style.display = 'block';
+                        }
+
+                        function checkAnswers() {
+                            let score = 0;
+                            detailedResults = [];
+                            
+                            quizData.forEach((q, index) => {
+                                const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                                const userAnswer = selected ? selected.value : null;
+                                const isCorrect = userAnswer === q.correta;
+                                
+                                if(isCorrect) score++;
+                                detailedResults.push({
+                                    question: q.pergunta,
+                                    correctAnswer: q.correta,
+                                    userAnswer: userAnswer,
+                                    isCorrect: isCorrect
+                                });
+
+                                if(!isCorrect) {
+                                    const questionDiv = document.querySelector(`[data-question-index="${index}"]`);
+                                    if(questionDiv) questionDiv.classList.add('incorrect');
+                                }
+                            });
+
+                            const total = quizData.length;
+                            const resultDiv = document.getElementById('result');
+                            resultDiv.style.display = 'block';
+                            resultDiv.innerHTML = `
+                                <h3>🎉 Resultado: ${score}/${total}</h3>
+                                <p>${getPerformanceMessage(score/total)}</p>
+                                <button onclick="sendResultToProfessor()">📤 Enviar para Professor</button>
+                            `;
+
+                            updateRanking(score);
+                            document.getElementById('submit-btn').style.display = 'none';
+                        }
+                        
+
+                        // Mensagem de desempenho
+                        function getPerformanceMessage(percentage) {
+                            if (percentage >= 0.9) return "Excelente! Domina a teoria musical! 🎼";
+                            if (percentage >= 0.7) return "Bom! Continue estudando! 📚";
+                            return "Revise o material e tente novamente! ✨";
+                        }
+
+                        // Enviar resultado para professor
+
+                        // Enviar resultado para professor
+						function sendResultToProfessor() {
+							const score = detailedResults.filter(r => r.isCorrect).length;
+							const total = detailedResults.length;
+
+							// Formatação da mensagem
+							let message = encodeURIComponent(
+                                 textoTitulo + `
+` +							    
+								`*📊 Resultado do Quiz - ${userData.name}*
+
+` +
+                                `
+
+
+` +
+								`✅ *Acertos*: ${score}
+` +
+								`❌ *Erros*: ${total - score}
+
+` +
+                                `📈 Percentual de Acerto: ${((score/total)*100).toFixed(1)}%
+
+` +
+								`*📝 Detalhes das Respostas:*
+` +
+                                `
+
+
+` +
+								detailedResults.map((res, idx) => 
+									`🔹 *Pergunta ${idx + 1}:* ${res.question}
+` +
+									`   ✅ *Correta:* ${res.correctAnswer}
+` +
+									`   🟩 *Aluno:* ${res.userAnswer || "Nenhuma"}
+` +
+									(res.isCorrect ? `   🎯 *Resultado:* Correto!
+` : `   ⚠️ *Resultado:* Incorreto!
+`) +
+									`───────────────────────────────
+`
+								).join('')+
+                                    `
+
+
+` +
+                                    `*Atenciosamente,*
+` +
+                                    `Equipe de Ensino Musical CCB 🎵
+
+` +
+                                    `*Dúvidas ou feedback?* Entre em contato através deste número.`
+							);
+
+							// Abre o WhatsApp com a mensagem formatada
+							window.open(`https://wa.me/${userData.professorWhatsApp}?text=${message}`);
+						}
+
+                        // Sistema de ranking
+                        function updateRanking(score) {
+                            const ranking = JSON.parse(localStorage.getItem('quizRanking') || '[]');
+                            ranking.push({ 
+                                name: userData.name, 
+                                score, 
+                                timestamp: new Date().toISOString() 
+                            });
+                            
+                            ranking.sort((a, b) => b.score - a.score);
+                            const top10 = ranking.slice(0, 10);
+                            localStorage.setItem('quizRanking', JSON.stringify(top10));
+                            displayRanking(top10);
+                        }
+
+                        function displayRanking(data) {
+                            const list = document.getElementById('ranking-list');
+                            list.innerHTML = data.map((entry, index) => `
+                                <li>${index + 1}. ${entry.name} - ${entry.score} pontos</li>
+                            `).join('');
+                        }
+
+                        function loadRanking() {
+                            const savedData = localStorage.getItem('quizRanking');
+                            if (savedData) displayRanking(JSON.parse(savedData));
+                        }
+                        
+                    </script>
+
+                </body>
+                </html>
+            

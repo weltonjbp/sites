@@ -1,0 +1,383 @@
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Jogo de Notas Musicais</title>
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #F0F8FF 0%, #E6F5FF 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 10px;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 800px;
+            gap: 20px;
+        }
+        .pentagrama {
+            background: white;
+            width: 100%;
+            max-width: 800px;
+            border: none;
+            border-radius: 10px;
+            aspect-ratio: 4/1;
+            position: relative;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin: 10px 0;
+            touch-action: none;
+            padding-top: 30px; 
+        }
+        .linha-pentagrama {
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: #333;
+            left: 0;
+            transform-origin: center;
+            transition: background-color 0.3s ease;
+        }
+        .rotulo-nota {
+            position: absolute;
+            font-size: 12px;
+            color: #666;
+            left: 10px;
+            transition: 0.3s;
+        }
+        .nota-alvo {
+            padding: 18px 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease;
+            background: #4CAF50;
+            color: white;
+            text-align: center;
+            font-size: 18px;
+            width: 100%;
+            max-width: 300px;
+        }
+        .nota-alvo:hover {
+            transform: scale(1.05);
+        }
+        .notas-disponiveis {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            width: 100%;
+            max-width: 400px;
+        }
+        .nota-item {
+            padding: 15px;
+            background: #2196F3;
+            color: white;
+            border-radius: 8px;
+            cursor: move;
+            user-select: none;
+            transition: all 0.2s;
+            text-align: center;
+            font-size: 16px;
+            cursor: grab;
+            box-shadow: 0 3px 5px rgba(0,0,0,0.1);
+            transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            touch-action: none;
+        }
+        .nota-item:active {
+            cursor: grabbing;
+            transform: scale(0.95) rotate(-1deg);
+        }
+        .nota-colocada {
+            width: 25px;
+            height: 25px;
+            background: #FFD700;
+            border-radius: 50%;
+            position: absolute;
+            border: 2px solid #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000;
+            font-size: 12px;
+            font-weight: bold;
+            animation: fadeIn 0.5s ease;
+            transition: transform 0.3s ease;
+        }
+        .nota-colocada:hover {
+            transform: scale(1.1);
+        }
+        #feedback {
+            font-size: 16px;
+            padding: 15px;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 300px;
+            text-align: center;
+        }
+        #reset {
+            transition: all 0.3s ease;
+            padding: 12px 25px;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+        #reset:hover {
+            transform: translateY(-2px);
+        }
+        #reset:active {
+            transform: translateY(0);
+        }
+        #pontuacao {
+            transition: color 0.3s ease;
+            font-size: 16px;
+            margin: 10px auto;
+            text-align: center;
+            width: 100%;
+            max-width: 300px;
+        }
+        .correto {
+            animation: pulse 1s ease;
+        }
+        .errado {
+            animation: pulse 1s ease;
+        }
+        .dragging {
+            opacity: 0.8;
+            transform: scale(1.1) !important;
+            z-index: 1000;
+            position: fixed !important;
+            transition: none !important;
+        }
+        @media (max-width: 768px) {
+            .linha-pentagrama {
+                height: 1.5px;
+            }
+            .rotulo-nota {
+                font-size: 10px;
+                left: 5px;
+            }
+            .nota-alvo {
+                font-size: 16px;
+                padding: 12px;
+            }
+            .notas-disponiveis {
+                grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+                gap: 8px;
+            }
+            .nota-item {
+                padding: 12px;
+                font-size: 14px;
+            }
+            .nota-colocada {
+                width: 20px;
+                height: 20px;
+                font-size: 10px;
+            }
+            .container {
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .pentagrama {
+                flex: 1 1 100%;
+                max-width: 100%;
+            }
+            .notas-disponiveis {
+                flex: 1 1 100%;
+                max-width: 100%;
+            }
+        }
+    </style>
+<!-- Code injected by Five-server -->
+  <script async data-id="five-server" data-file="c:\Users\welton\Documents\Embarcadero\Jogos\jogo3.html" type="application/javascript" src="/fiveserver.js"></script>
+  </head>
+<body>
+    <div class="nota-alvo" id="nota-alvo">Encontre: DÓ</div>
+    <div class="container">
+        <div class="pentagrama">
+            <div class="linha-pentagrama" style="top: 90%"></div>
+            <div class="linha-pentagrama" style="top: 70%"></div>
+            <div class="linha-pentagrama" style="top: 50%"></div>
+            <div class="linha-pentagrama" style="top: 30%"></div>
+            <div class="linha-pentagrama" style="top: 10%"></div>
+            <div class="rotulo-nota" style="top: 85%"></div>
+            <div class="rotulo-nota" style="top: 65%"></div>
+            <div class="rotulo-nota" style="top: 45%"></div>
+            <div class="rotulo-nota" style="top: 25%"></div>
+            <div class="rotulo-nota" style="top: 15%"></div>
+        </div>
+        <div class="notas-disponiveis">
+            <div class="nota-item" draggable="true" data-nota="Dó">DÓ</div>
+            <div class="nota-item" draggable="true" data-nota="Ré">RÉ</div>
+            <div class="nota-item" draggable="true" data-nota="Mi">MI</div>
+            <div class="nota-item" draggable="true" data-nota="Fá">FÁ</div>
+            <div class="nota-item" draggable="true" data-nota="Sol">SOL</div>
+            <div class="nota-item" draggable="true" data-nota="Lá">LÁ</div>
+            <div class="nota-item" draggable="true" data-nota="Si">SI</div>
+        </div>
+    </div>
+    <div id="feedback"></div>
+    <div id="pontuacao">Pontuação: 0</div>
+    <button id="reset">Resetar Jogo</button>
+
+    <script>
+        const posicoes = {
+            'Mi': [{y: 90}, {y: 20}],
+            'Sol': [{y: 70}],
+            'Si': [{y: 50}],
+            'Ré': [{y: 30}],
+            'Fá': [{y: 10}, {y: 80}],
+            'Lá': [{y: 60}],
+            'Dó': [{y: 40}]
+        };
+
+        let notaAtual = 'Dó';
+        let pontuacao = 0;
+        let activeDragElement = null;
+        let initialX = 0;
+        let initialY = 0;
+
+        function atualizarDesafio() {
+            const notas = Object.keys(posicoes);
+            notaAtual = notas[Math.floor(Math.random() * notas.length)];
+            document.getElementById('nota-alvo').textContent = `Encontre: ${notaAtual.toUpperCase()}`;
+        }
+
+        function atualizarPontuacao() {
+            document.getElementById('pontuacao').textContent = `Pontuação: ${pontuacao}`;
+        }
+
+        // Eventos para desktop
+        document.querySelectorAll('.nota-item').forEach(nota => {
+            nota.addEventListener('dragstart', e => {
+                activeDragElement = e.target;
+                e.dataTransfer.setData('text/plain', e.target.dataset.nota);
+                e.dataTransfer.effectAllowed = 'move';
+            });
+        });
+
+        // Eventos para mobile
+        document.querySelectorAll('.nota-item').forEach(nota => {
+            nota.addEventListener('touchstart', e => {
+                activeDragElement = e.target;
+                initialX = e.touches[0].clientX - nota.getBoundingClientRect().left;
+                initialY = e.touches[0].clientY - nota.getBoundingClientRect().top;
+                nota.classList.add('dragging');
+            });
+
+            nota.addEventListener('touchmove', e => {
+                if (!activeDragElement) return;
+                e.preventDefault();
+                const touch = e.touches[0];
+                activeDragElement.style.left = `${touch.clientX - initialX}px`;
+                activeDragElement.style.top = `${touch.clientY - initialY}px`;
+            });
+
+            nota.addEventListener('touchend', () => {
+                if (!activeDragElement) return;
+                activeDragElement.classList.remove('dragging');
+                activeDragElement.style.position = '';
+                activeDragElement.style.left = '';
+                activeDragElement.style.top = '';
+                activeDragElement = null;
+            });
+        });
+
+        // Handler unificado para drop
+        function handleDrop(e) {
+            const pentagrama = document.querySelector('.pentagrama');
+            const rect = pentagrama.getBoundingClientRect();
+            let x, y, nota;
+
+            if (e.type === 'drop') { // Desktop
+                x = e.clientX;
+                y = e.clientY;
+                nota = e.dataTransfer.getData('text/plain');
+            } else { // Mobile
+                if (!activeDragElement) return;
+                const touch = e.changedTouches[0];
+                x = touch.clientX;
+                y = touch.clientY;
+                nota = activeDragElement.dataset.nota;
+            }
+
+            // Verifica se está dentro do pentagrama
+            if (x < rect.left || x > rect.right || y < rect.top || y > rect.bottom) return;
+
+            const posY = ((y - rect.top) / rect.height) * 100;
+            const posicoesValidas = posicoes[notaAtual];
+            let closestPos = posicoesValidas[0];
+            let minDiff = Infinity;
+
+            posicoesValidas.forEach(pos => {
+                const diff = Math.abs(posY - pos.y);
+                if (diff < minDiff) {
+                    minDiff = diff;
+                    closestPos = pos;
+                }
+            });
+
+            const posicaoCorreta = minDiff < 10 && nota === notaAtual;
+            const feedback = document.getElementById('feedback');
+
+            if (posicaoCorreta) {
+                pontuacao += 10;
+                atualizarPontuacao();
+                
+                const notaFigura = document.createElement('div');
+                notaFigura.className = 'nota-colocada';
+                notaFigura.textContent = nota[0];
+                notaFigura.style.left = `${(x - rect.left)/rect.width*100}%`;
+                notaFigura.style.top = `calc(${closestPos.y}% - 12.5px)`;
+                pentagrama.appendChild(notaFigura);
+                
+                feedback.textContent = "✅ Correto! Muito bem!";
+                feedback.className = 'correto';
+                setTimeout(() => {
+                    feedback.textContent = '';
+                    feedback.className = '';
+                    atualizarDesafio();
+                }, 1500);
+            } else {
+                feedback.textContent = "❌ Local errado ou nota incorreta!";
+                feedback.className = 'errado';
+                setTimeout(() => {
+                    feedback.textContent = '';
+                    feedback.className = '';
+                }, 1500);
+            }
+        }
+
+        // Event listeners para pentagrama
+        const pentagrama = document.querySelector('.pentagrama');
+        pentagrama.addEventListener('dragover', e => e.preventDefault());
+        pentagrama.addEventListener('drop', handleDrop);
+        pentagrama.addEventListener('touchend', handleDrop);
+
+        // Reset
+        document.getElementById('reset').addEventListener('click', () => {
+            pontuacao = 0;
+            atualizarPontuacao();
+            document.querySelectorAll('.nota-colocada').forEach(el => el.remove());
+            atualizarDesafio();
+        });
+
+        atualizarDesafio();
+    </script>
+</body>
+</html>

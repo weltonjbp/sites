@@ -1,0 +1,339 @@
+
+                 <!DOCTYPE html>
+                <html lang="pt-br">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+					
+                    <title>Quiz Musical - CCB</title>
+
+                    <style>
+                        body {
+                            font-family: 'Arial', sans-serif;
+                            max-width: 800px;
+                            margin: 0 auto;
+                            padding: 20px;
+                            background-color: #f0f7ff;
+                        }
+
+                        #start-section, .quiz-container, .ranking {
+                            background-color: white;
+                            padding: 25px;
+                            border-radius: 10px;
+                            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+                            margin-bottom: 20px;
+                        }
+
+                        .quiz-container {
+                            display: none;
+                        }
+
+                        input[type="text"], input[type="tel"] {
+                            padding: 10px;
+                            margin: 10px 0;
+                            width: 100%;
+                            max-width: 300px;
+                            border: 1px solid #2c5aa0;
+                            border-radius: 5px;
+                        }
+
+                        button {
+                            background-color: #2c5aa0;
+                            color: white;
+                            padding: 12px 24px;
+                            border: none;
+                            border-radius: 5px;
+                            cursor: pointer;
+                            font-size: 16px;
+                            margin-top: 10px;
+                        }
+
+                        button:hover {
+                            background-color: #1d3d6d;
+                        }
+
+                        .question {
+                            margin-bottom: 25px;
+                            padding: 15px;
+                            border-left: 4px solid #2c5aa0;
+                        }
+
+                        .options label {
+                            display: block;
+                            margin: 10px 0;
+                            padding: 10px;
+                            background-color: #e6f0ff;
+                            border-radius: 5px;
+                            cursor: pointer;
+                        }
+
+                        .result {
+                            display: none;
+                            margin-top: 30px;
+                            padding: 20px;
+                            background-color: #e8f5e9;
+                            border-radius: 5px;
+                            color: #2c5aa0;
+                        }
+
+                        .ranking ul {
+                            list-style: none;
+                            padding: 0;
+                        }
+
+                        .ranking li {
+                            padding: 8px;
+                            margin: 5px 0;
+                            background-color: #e6f0ff;
+                            border-radius: 5px;
+                        }
+                        .incorrect {
+                            border-left: 4px solid #ff0000;
+                            background-color: #ffe6e6;
+                            animation: pulse 0.5s ease-in-out;
+                        }
+                        @keyframes pulse {
+                            0% { transform: scale(1); }
+                            50% { transform: scale(1.02); }
+                            100% { transform: scale(1); }
+                        }
+                    </style>
+					
+                </head>
+                <body>
+                    <!-- Tela Inicial -->
+                    <div id="start-section">
+                        <h1 id="meuTitulo">🎵 Avaliação MSA CCB- Fase 5</h1>
+                        
+                        <p>Digite seus dados para começar:</p>
+                        <input type="text" id="user-name" placeholder="Seu nome" required>
+                        <input type="tel" id="whatsapp" placeholder="Seu WhatsApp (Ex:0 0000-0000)" required>
+                        <input type="tel" id="professor-whatsapp" placeholder="WhatsApp do Professor (Ex:0 0000-0000)" required>
+                        <button onclick="startQuiz()">Iniciar Quiz</button>
+                        <p id="error-msg" style="color: red; display: none;">Preencha todos os campos corretamente!</p>
+                        
+                        <!-- Ranking -->
+                        <div class="ranking">
+                            <h3>🏆 Top 10 Pontuações</h3>
+                            <ul id="ranking-list"></ul>
+                        </div>
+                    </div>
+
+                    <!-- Quiz -->
+                    <div class="quiz-container" id="quiz-container">
+                        <h1>Quiz de Teoria Musical</h1>
+                        <div id="quiz-content"></div> <!-- Perguntas dinâmicas aqui -->
+                        <button onclick="checkAnswers()" style="display: none;" id="submit-btn">Enviar Respostas</button>
+                        <div class="result" id="result"></div>
+                    </div>
+
+                    <script>
+                        // JSON do quiz (gerado pelo professor)
+                        const quizData = [{"pergunta":"Assinale o conceito sobre as pausas musicais","opcoes":["São figuras que representam a quantidade de movimentos","É a figura que representa o silêncio","São sinais para representar a altura do som","São elementos para representar a melodia da música"],"correta":"É a figura que representa o silêncio"},{"pergunta":"Complete: A haste colocada para cima precisa ser à ____ da cabeça da nota, e para baixo precisa ser à ____ da cabeça da nota.","opcoes":["Direita; esquerda","Esquerda; direita","Centro; esquerda","Não há uma regra"],"correta":"Direita; esquerda"},{"pergunta":"Para realizarmos os exercícios rítmicos, podemos assinalar a pulsação:","opcoes":["Utilizando um lápis, objeto rígido ou outro equipamento","Batendo a mão sobre uma superfície","Todas as alternativas estão corretas","Marcando com palmas"],"correta":"Todas as alternativas estão corretas"},{"pergunta":"Complete: É necessário somar____ semínimas para se obter uma colcheia.","opcoes":["4","2","1","Nenhuma"],"correta":"Nenhuma"},{"pergunta":"Qual definição abaixo se refere à “pulsação”?","opcoes":["Pulso regular que contém batidas constantes, com a mesma duração","Distribuição dos sons num espaço de tempo","Divisão de um trecho musical em séries regulares de tempos","Indica o final da peça musical"],"correta":"Pulso regular que contém batidas constantes, com a mesma duração"},{"pergunta":"É correto afirmar que o nosso hinário possui semicolcheias e fusas?","opcoes":["Sim, é correto","O nosso hinário possui semibreve até semicolcheia","O nosso hinário possui mínima até colcheia","Todas as alternativas estão corretas"],"correta":"O nosso hinário possui semibreve até semicolcheia"},{"pergunta":"Qual figura abaixo possui a cabeça preenchida (pintada), haste e 1 colchete?","opcoes":["Semínima","Semibreve","Colcheia","Mínima"],"correta":"Colcheia"},{"pergunta":"Vão quantas semicolcheias para se obter uma mínima?","opcoes":["16","8","34","Nenhuma das alternativas acima"],"correta":"8"},{"pergunta":"Responda: Uma semínima é igual a soma de 4________ .","opcoes":["Semibreves","Colcheias","Fusas","Semicolcheias"],"correta":"Semicolcheias"},{"pergunta":"A figura da imagem é a e seu número é . ♪","opcoes":["Colcheia - 8","Semifusa - 32","Fusa - 64","Fusa - 32"],"correta":"Colcheia - 8"},{"pergunta":"O que é compasso?","opcoes":["É o início ou o fim de um compasso com linhas verticais","É a quantidade de tempos dentro do compasso e a figura de 1 tempo","É a divisão de um trecho musical em séries regulares de tempos","É a distribuição de sons num espaço de tempo"],"correta":"É a divisão de um trecho musical em séries regulares de tempos"},{"pergunta":"Qual das alternativas abaixo é falsa?","opcoes":["A barra dupla separa os compassos da música","A barra de repetição indica a repetição de um trecho","A barra simples indica o início ou fim de um compasso","A barra final indica o final da peça musical"],"correta":"A barra dupla separa os compassos da música"},{"pergunta":"Complete: A fórmula de compasso _ /_ determina que o compasso terá__ tempos e a ______ representa a U.T.","opcoes":["4/2; 2; semínima","4/4; 4; mínima","4/4; 4; semínima","2/4; 2; mínima"],"correta":"4/4; 4; semínima"},{"pergunta":"Complete a frase respectivamente: O _____ é a distribuição de sons num espaço de tempo e a _____ é a batida que marca o início e o fim desse espaço de tempo.","opcoes":["Colchete; leitura rítmica","Ritmo; pulsação","Movimento de condução; pulsação","Compasso; leitura métrica"],"correta":"Ritmo; pulsação"},{"pergunta":"Assinale a única alternativa verdadeira abaixo.","opcoes":["Ao subir a mão no movimento não deve passar da linha dos olhos","A preparação do movimento deve ser feita com a mão abaixo da altura do peito","A pulsação sempre se inicia na preparação do movimento","A sílaba “Tá” pode ser pronunciada como “TÁáÁá”"],"correta":"Ao subir a mão no movimento não deve passar da linha dos olhos"}];
+                        let userData = {}; // Declaração global corrigida
+                        let detailedResults = [];
+                        const titulo = document.getElementById('meuTitulo');
+                        const textoTitulo = titulo.textContent;
+                        // Carregar ranking
+                        loadRanking();
+
+                        // Iniciar quiz
+                        function startQuiz() {
+                            const name = document.getElementById('user-name').value;
+                            const whatsapp = document.getElementById('whatsapp').value.replace(/D/g, '');
+                            const professorWhatsApp = document.getElementById('professor-whatsapp').value.replace(/D/g, '');
+
+                            if (name && whatsapp.length === 11 && professorWhatsApp.length === 11 && quizData.length > 0) {
+                                userData = { 
+                                    name, 
+                                    whatsapp: `55${whatsapp}`, 
+                                    professorWhatsApp: `55${professorWhatsApp}` 
+                                };
+                                
+                                document.getElementById('start-section').style.display = 'none';
+                                document.getElementById('quiz-container').style.display = 'block';
+                                renderQuiz();
+                            } else {
+                                document.getElementById('error-msg').style.display = 'block';
+                            }
+                        }
+
+                        // Renderizar perguntas dinamicamente
+                      function renderQuiz() {
+                            const container = document.getElementById('quiz-content');
+                            container.innerHTML = '';
+
+                            quizData.forEach((q, index) => {
+                                const questionDiv = document.createElement('div');
+                                questionDiv.className = 'question';
+                                questionDiv.setAttribute('data-question-index', index);
+                                questionDiv.innerHTML = `
+                                    <h2>${index+1}. ${q.pergunta}</h2>
+                                    <div class="options">
+                                        ${q.opcoes.map(opt => `
+                                            <label><input type="radio" name="q${index}" value="${opt}"> ${opt}</label>
+                                        `).join('')}
+                                    </div>
+                                `;
+                                container.appendChild(questionDiv);
+                            });
+                            document.getElementById('submit-btn').style.display = 'block';
+                        }
+
+                        // Verificar respostas
+                     function renderQuiz() {
+                            const container = document.getElementById('quiz-content');
+                            container.innerHTML = '';
+
+                            quizData.forEach((q, index) => {
+                                const questionDiv = document.createElement('div');
+                                questionDiv.className = 'question';
+                                questionDiv.setAttribute('data-question-index', index);
+                                questionDiv.innerHTML = `
+                                    <h2>${index+1}. ${q.pergunta}</h2>
+                                    <div class="options">
+                                        ${q.opcoes.map(opt => `
+                                            <label><input type="radio" name="q${index}" value="${opt}"> ${opt}</label>
+                                        `).join('')}
+                                    </div>
+                                `;
+                                container.appendChild(questionDiv);
+                            });
+                            document.getElementById('submit-btn').style.display = 'block';
+                        }
+
+                        function checkAnswers() {
+                            let score = 0;
+                            detailedResults = [];
+                            
+                            quizData.forEach((q, index) => {
+                                const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                                const userAnswer = selected ? selected.value : null;
+                                const isCorrect = userAnswer === q.correta;
+                                
+                                if(isCorrect) score++;
+                                detailedResults.push({
+                                    question: q.pergunta,
+                                    correctAnswer: q.correta,
+                                    userAnswer: userAnswer,
+                                    isCorrect: isCorrect
+                                });
+
+                                if(!isCorrect) {
+                                    const questionDiv = document.querySelector(`[data-question-index="${index}"]`);
+                                    if(questionDiv) questionDiv.classList.add('incorrect');
+                                }
+                            });
+
+                            const total = quizData.length;
+                            const resultDiv = document.getElementById('result');
+                            resultDiv.style.display = 'block';
+                            resultDiv.innerHTML = `
+                                <h3>🎉 Resultado: ${score}/${total}</h3>
+                                <p>${getPerformanceMessage(score/total)}</p>
+                                <button onclick="sendResultToProfessor()">📤 Enviar para Professor</button>
+                            `;
+
+                            updateRanking(score);
+                        }
+                        
+
+                        // Mensagem de desempenho
+                        function getPerformanceMessage(percentage) {
+                            if (percentage >= 0.9) return "Excelente! Domina a teoria musical! 🎼";
+                            if (percentage >= 0.7) return "Bom! Continue estudando! 📚";
+                            return "Revise o material e tente novamente! ✨";
+                        }
+
+                        // Enviar resultado para professor
+
+                        // Enviar resultado para professor
+						function sendResultToProfessor() {
+							const score = detailedResults.filter(r => r.isCorrect).length;
+							const total = detailedResults.length;
+
+							// Formatação da mensagem
+							let message = encodeURIComponent(
+							      textoTitulo + `
+` +
+								`*📊 Resultado do Quiz - ${userData.name}*
+
+` +
+                                `
+
+
+` +
+								`✅ *Acertos*: ${score}
+` +
+								`❌ *Erros*: ${total - score}
+
+` +
+                                `📈 Percentual de Acerto: ${((score/total)*100).toFixed(1)}%
+
+` +
+								`*📝 Detalhes das Respostas:*
+` +
+                                `
+
+
+` +
+								detailedResults.map((res, idx) => 
+									`🔹 *Pergunta ${idx + 1}:* ${res.question}
+` +
+									`   ✅ *Correta:* ${res.correctAnswer}
+` +
+									`   🟩 *Aluno:* ${res.userAnswer || "Nenhuma"}
+` +
+									(res.isCorrect ? `   🎯 *Resultado:* Correto!
+` : `   ⚠️ *Resultado:* Incorreto!
+`) +
+									`───────────────────────────────
+`
+								).join('')+
+                                    `
+
+
+` +
+                                    `*Atenciosamente,*
+` +
+                                    `Equipe de Ensino Musical CCB 🎵
+
+` +
+                                    `*Dúvidas ou feedback?* Entre em contato através deste número.`
+							);
+
+							// Abre o WhatsApp com a mensagem formatada
+							window.open(`https://wa.me/${userData.professorWhatsApp}?text=${message}`);
+						}
+
+                        // Sistema de ranking
+                        function updateRanking(score) {
+                            const ranking = JSON.parse(localStorage.getItem('quizRanking') || '[]');
+                            ranking.push({ 
+                                name: userData.name, 
+                                score, 
+                                timestamp: new Date().toISOString() 
+                            });
+                            
+                            ranking.sort((a, b) => b.score - a.score);
+                            const top10 = ranking.slice(0, 10);
+                            localStorage.setItem('quizRanking', JSON.stringify(top10));
+                            displayRanking(top10);
+                        }
+
+                        function displayRanking(data) {
+                            const list = document.getElementById('ranking-list');
+                            list.innerHTML = data.map((entry, index) => `
+                                <li>${index + 1}. ${entry.name} - ${entry.score} pontos</li>
+                            `).join('');
+                        }
+
+                        function loadRanking() {
+                            const savedData = localStorage.getItem('quizRanking');
+                            if (savedData) displayRanking(JSON.parse(savedData));
+                        }
+                    </script>
+
+                </body>
+                </html>
+            

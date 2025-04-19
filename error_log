@@ -1,0 +1,5 @@
+[06-Mar-2025 19:10:44 America/Sao_Paulo] PHP Parse error:  syntax error, unexpected 'throw' (T_THROW) in /home/gmapsist/diskwai/apps/salvar_quiz.php on line 22
+[06-Mar-2025 19:12:13 America/Sao_Paulo] PHP Parse error:  syntax error, unexpected 'throw' (T_THROW) in /home/gmapsist/diskwai/apps/salvar_quiz.php on line 22
+[06-Mar-2025 21:10:50 America/Sao_Paulo] PHP Warning:  mkdir(): Permission denied in /home/gmapsist/diskwai/apps/salvar_quiz.php on line 22
+[06-Mar-2025 21:10:56 America/Sao_Paulo] PHP Warning:  mkdir(): Permission denied in /home/gmapsist/diskwai/apps/salvar_quiz.php on line 22
+[06-Mar-2025 21:28:41 America/Sao_Paulo] PHP Warning:  mkdir(): Invalid path in /home/gmapsist/diskwai/apps/salvar_quiz.php on line 22
